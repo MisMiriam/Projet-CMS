@@ -1,8 +1,10 @@
 <?php
 
-class Router {
+class Router
+{
 
-    public function run() {
+    public function run()
+    {
 
         $url = $_GET['url'] ?? '';
 
@@ -19,7 +21,7 @@ class Router {
         $method = $parts[1] ?? 'index';
         $params = array_slice($parts, 2);
 
-        $controllerFile = "../controllers/$controllerName.php";
+        $controllerFile = "../app/controllers/$controllerName.php";
 
         if (file_exists($controllerFile)) {
             require_once $controllerFile;
@@ -39,8 +41,9 @@ class Router {
         echo "404 - Page non trouvée";
     }
 
-    private function callController($controller, $method) {
-        require_once "../controllers/{$controller}Controller.php";
+    private function callController($controller, $method)
+    {
+        require_once "../app/controllers/{$controller}Controller.php";
         $controllerClass = $controller . 'Controller';
         $instance = new $controllerClass();
         $instance->$method();
