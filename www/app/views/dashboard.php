@@ -38,7 +38,7 @@
     <main class="container my-4">
         <h1 class="text-center my-3 my-lg-5 fw-bold">Tableau de bord</h1>
         <!-- Sites créée -->
-        <section class="d-flex flex-column row-gap-3">
+        <section class="d-flex flex-column row-gap-3 my-2">
             <h2 class="fw-semibold">Mes sites web
                 <button class="btn" type="button" data-bs-toggle="collapse" data-bs-target="#collapseWebsites" aria-expanded="true" aria-controls="collapseWebsites">
                     <i class="bi bi-chevron-down"></i>
@@ -54,7 +54,7 @@
             </div>
             <div class="collapse show" id="collapseWebsites">
                 <div class="container-fluid">
-                    <div class="row g-3 my-2 my-md-4">
+                    <div class="row g-3 my-2 my-md-3">
                         <!-- card lg -->
                         <div class="col-12">
                             <div class="card" style="max-width: 780px;">
@@ -246,7 +246,7 @@
             </div>
         </section>
         <!-- Sites enregistrés -->
-        <section>
+        <section class="d-flex flex-column row-gap-3 my-2">
             <h2 class="fw-semibold">Favoris
                 <button class="btn" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFav" aria-expanded="false" aria-controls="collapseFav">
                     <i class="bi bi-chevron-down"></i>
@@ -254,7 +254,7 @@
             </h2>
             <div class="collapse" id="collapseFav">
                 <div class="container-fluid">
-                    <div class="row g-3 my-2 my-md-4">
+                    <div class="row g-3 my-2 my-md-3">
                         <!-- card sm -->
                         <div class="col">
                             <div class="card p-4" style="max-width: 400px; min-width: 330px;">
@@ -345,7 +345,7 @@
             </div>
         </section>
         <!-- Tableau des utilisateurs -->
-        <section>
+        <section class="d-flex flex-column row-gap-3 my-2">
             <h2 class="fw-semibold">Liste des utilisateurs</h2>
             <table class="table">
                 <thead>
