@@ -18,6 +18,9 @@ RUN apt-get update && apt-get install -y \
 # Copier un php.ini personnalisé si besoin (monté via docker-compose)
 # WORKDIR /var/www/html
 
+# Installer Composer dans le conteneur
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
 # Activer mod_rewrite (indispensable pour le routeur MVC)
 RUN a2enmod rewrite
 

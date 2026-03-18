@@ -1,0 +1,11 @@
+{
+    "name": "php/projet-cms",
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/"
+        }
+    },
+    "require": {
+        "phpmailer/phpmailer": "^7.0"
+    }
+}
