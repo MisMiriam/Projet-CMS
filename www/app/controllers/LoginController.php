@@ -44,7 +44,7 @@ class LoginController extends BaseController
         // Redirection selon le rôle
         switch ($user['role_id']) {
             case 1:
-                header('Location: /admin/dashboard');
+                header('Location: /adminDashboard');
                 break;
             case 2:
                 header('Location: /admin/pages');
