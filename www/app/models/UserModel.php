@@ -97,23 +97,57 @@ class UserModel
         return true;
     }
 
-    /** Récupère tous les utilisateurs (pour l'admin) */
+    /** Récupère tous les utilisateurs (pour l'admin) avec le nom du rôle (utilise RoleModel si disponible) */
     public function getAll(): array
     {
-        $sql = "SELECT id_user, firstname, lastname, email, role_id, is_active, created_at FROM users ORDER BY created_at DESC";
-        $stmt = $this->db->query($sql);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        try {
+            $roleModel = new RoleModel();
+            $roleTable = $roleModel->getTableName();
+            $roleIdCol = $roleModel->getIdColumn();
+            $roleNameCol = $roleModel->getNameColumn();
+
+            $sql = "SELECT u.id_user, u.firstname, u.lastname, u.email, u.role_id, r.`$roleNameCol` as role_name, u.is_active, u.created_at
+                    FROM users u
+                    LEFT JOIN `$roleTable` r ON r.`$roleIdCol` = u.role_id
+                    ORDER BY u.created_at DESC";
+
+            $stmt = $this->db->query($sql);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (\Exception $e) {
+            // fallback sans jointure si erreur
+            $sql = "SELECT id_user, firstname, lastname, email, role_id, is_active, created_at FROM users ORDER BY created_at DESC";
+            $stmt = $this->db->query($sql);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
     }
 
-    /** Récupère un utilisateur par son ID */
+    /** Récupère un utilisateur par son ID (avec role name si possible) */
     public function findById(int $id): ?array
     {
-        $sql = "SELECT id_user, firstname, lastname, email, role_id, is_active, created_at FROM users WHERE id_user = :id LIMIT 1";
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute(["id" => $id]);
+        try {
+            $roleModel = new RoleModel();
+            $roleTable = $roleModel->getTableName();
+            $roleIdCol = $roleModel->getIdColumn();
+            $roleNameCol = $roleModel->getNameColumn();
 
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $result ?: null;
+            $sql = "SELECT u.id_user, u.firstname, u.lastname, u.email, u.role_id, r.`$roleNameCol` as role_name, u.is_active, u.created_at
+                    FROM users u
+                    LEFT JOIN `$roleTable` r ON r.`$roleIdCol` = u.role_id
+                    WHERE u.id_user = :id LIMIT 1";
+
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute(["id" => $id]);
+
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $result ?: null;
+        } catch (\Exception $e) {
+            $sql = "SELECT id_user, firstname, lastname, email, role_id, is_active, created_at FROM users WHERE id_user = :id LIMIT 1";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute(["id" => $id]);
+
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $result ?: null;
+        }
     }
 
     /** Met à jour un utilisateur (sans changer le mot de passe si non fourni) */
@@ -195,5 +229,15 @@ class UserModel
         $sql = "UPDATE users SET password = :password WHERE id_user = :id";
         $stmt = $this->db->prepare($sql);
         $stmt->execute(['password' => $passwordHashed, 'id' => $userId]);
+    }
+
+    /** Compte le nombre d'utilisateurs ayant le rôle donné */
+    public function countByRole(int $roleId): int
+    {
+        $sql = "SELECT COUNT(*) as c FROM users WHERE role_id = :role";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['role' => $roleId]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return (int)($row['c'] ?? 0);
     }
 }

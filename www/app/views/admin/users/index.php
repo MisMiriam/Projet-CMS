@@ -24,7 +24,7 @@
                     <td><?= htmlspecialchars($user['firstname']) ?></td>
                     <td><?= htmlspecialchars($user['lastname']) ?></td>
                     <td><?= htmlspecialchars($user['email']) ?></td>
-                    <td><?= htmlspecialchars($user['role_id']) ?></td>
+                    <td><?= htmlspecialchars($user['role_name'] ?? $user['role_id']) ?></td>
                     <td><?= $user['is_active'] ? 'Oui' : 'Non' ?></td>
                     <td>
                         <a href="/admin/users/edit/<?= $user['id_user'] ?>" class="btn btn-sm btn-secondary">Modifier</a>

@@ -7,6 +7,22 @@ use PHPMailer\PHPMailer\Exception;
 
 class Mailer
 {
+    private function getBaseUrl(): string
+    {
+        // Priorité à l'env APP_URL si défini, sinon tenter de construire depuis la requête HTTP, sinon fallback
+        $env = getenv('APP_URL');
+        if ($env && is_string($env) && trim($env) !== '') {
+            return rtrim($env, '/');
+        }
+
+        if (!empty($_SERVER['HTTP_HOST'])) {
+            $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+            return $scheme . '://' . $_SERVER['HTTP_HOST'];
+        }
+
+        return 'http://localhost';
+    }
+
     public function sendActivationEmail(string $to, string $token): bool
     {
         $mail = new PHPMailer(true);
@@ -31,15 +47,18 @@ class Mailer
             $mail->isHTML(true);
             $mail->Subject = 'Activation de votre compte';
 
-            // Utiliser lien relatif pour l'activation afin d'éviter une URL hardcodée
-            $activationLink = "/activation/index?token=" . $token;
+            $base = $this->getBaseUrl();
+            $activationLink = $base . '/activation/index?token=' . urlencode($token);
 
             $mail->Body = "
                 <h2>Bienvenue !</h2>
                 <p>Merci pour votre inscription.</p>
                 <p>Cliquez sur le lien ci-dessous pour activer votre compte :</p>
-                <a href='$activationLink'>$activationLink</a>
+                <p><a href=\"{$activationLink}\">{$activationLink}</a></p>
             ";
+
+            // Texte alternatif
+            $mail->AltBody = "Bienvenue !\n\nMerci pour votre inscription.\n\nCopiez/collez ce lien dans votre navigateur pour activer votre compte : {$activationLink}";
 
             return $mail->send();
         } catch (Exception $e) {
@@ -67,15 +86,18 @@ class Mailer
             $mail->isHTML(true);
             $mail->Subject = 'Réinitialisation de votre mot de passe';
 
-            $resetLink = "/reset/index?token=" . $token;
+            $base = $this->getBaseUrl();
+            $resetLink = $base . '/reset/index?token=' . urlencode($token);
 
             $mail->Body = "
                 <h2>Réinitialisation du mot de passe</h2>
                 <p>Vous avez demandé la réinitialisation de votre mot de passe.</p>
                 <p>Cliquez sur le lien ci-dessous pour définir un nouveau mot de passe :</p>
-                <a href='$resetLink'>$resetLink</a>
+                <p><a href=\"{$resetLink}\">{$resetLink}</a></p>
                 <p>Si vous n'avez pas demandé cette action, ignorez cet email.</p>
             ";
+
+            $mail->AltBody = "Réinitialisation du mot de passe\n\nVous avez demandé la réinitialisation de votre mot de passe. Copiez/collez ce lien dans votre navigateur pour définir un nouveau mot de passe : {$resetLink}";
 
             return $mail->send();
         } catch (Exception $e) {
