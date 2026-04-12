@@ -6,21 +6,16 @@ class Router
     {
         $url = $_GET['url'] ?? '';
 
-        // Page d'accueil
+        // Accueil
         if ($url === '') {
             return $this->callController('Home', 'index');
         }
 
         $parts = explode('/', trim($url, '/'));
 
-        /**
-         * ROUTES ADMIN : /admin/xxx
-         */
+        // Routes admin (/admin/...)
         if ($parts[0] === 'admin') {
-
-            // Exemple : /admin/pages/edit/12
-            // $parts = ['admin', 'pages', 'edit', '12']
-
+            // /admin/pages/edit/12 -> AdminPagesController::edit(12)
             $controllerName = 'Admin' . ucfirst($parts[1]) . 'Controller';
             $method = $parts[2] ?? 'index';
             $params = array_slice($parts, 3);
@@ -28,12 +23,8 @@ class Router
             return $this->dispatch($controllerName, $method, $params);
         }
 
-        /**
-         * ROUTES PAGES PUBLIQUES : /page/slug
-         */
+        // Page publique (/page/slug)
         if ($parts[0] === 'page') {
-
-            // Exemple : /page/mon-slug
             $controllerName = 'PageController';
             $method = 'show';
             $params = [$parts[1] ?? null];
@@ -41,9 +32,7 @@ class Router
             return $this->dispatch($controllerName, $method, $params);
         }
 
-        /**
-         * ROUTES MVC CLASSIQUES : /controller/method/param
-         */
+        // Route par défaut : /controller/method/params
         $controllerName = ucfirst($parts[0]) . 'Controller';
         $method = $parts[1] ?? 'index';
         $params = array_slice($parts, 2);

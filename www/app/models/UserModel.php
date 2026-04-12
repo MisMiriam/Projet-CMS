@@ -14,7 +14,7 @@ class UserModel
         $this->db = Database::getInstance()->getConnection();
     }
 
-    /** Vérifie si un email existe déjà comme vu en cours **/
+    // Vérifie si un email existe
     public function emailExists(string $email): bool
     {
         $sql = "SELECT id_user FROM users WHERE email = :email";
@@ -24,7 +24,7 @@ class UserModel
         return $stmt->fetch() !== false;
     }
 
-    /** Crée un utilisateur comme vu en cours mais adapté à notre archi MVC */
+    // Crée un utilisateur
     public function createUser(array $data): int
     {
         $sql = "
@@ -46,7 +46,7 @@ class UserModel
         return (int) $this->db->lastInsertId();
     }
 
-    /** Récupère un utilisateur via son email comme vu en cours */
+    // Récupère un utilisateur par email
     public function findByEmail(string $email): ?array
     {
         $sql = "SELECT * FROM users WHERE email = :email";
@@ -57,7 +57,7 @@ class UserModel
         return $result ?: null;
     }
 
-    /** Stocke un token d’activation */
+    // Stocke un token d'activation
     public function storeActivationToken(int $userId, string $token): void
     {
         $sql = "
@@ -72,7 +72,7 @@ class UserModel
         ]);
     }
 
-    /** Active un utilisateur via son token */
+    // Active un compte via token
     public function activateUser(string $token): bool
     {
         // Récupérer l'utilisateur dans la bdd
@@ -97,7 +97,7 @@ class UserModel
         return true;
     }
 
-    /** Récupère tous les utilisateurs (pour l'admin) avec le nom du rôle (utilise RoleModel si disponible) */
+    // Liste des utilisateurs (admin)
     public function getAll(): array
     {
         try {
@@ -114,14 +114,14 @@ class UserModel
             $stmt = $this->db->query($sql);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (\Exception $e) {
-            // fallback sans jointure si erreur
+            // fallback sans jointure
             $sql = "SELECT id_user, firstname, lastname, email, role_id, is_active, created_at FROM users ORDER BY created_at DESC";
             $stmt = $this->db->query($sql);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
     }
 
-    /** Récupère un utilisateur par son ID (avec role name si possible) */
+    // Récupère un utilisateur par id
     public function findById(int $id): ?array
     {
         try {
@@ -150,7 +150,7 @@ class UserModel
         }
     }
 
-    /** Met à jour un utilisateur (sans changer le mot de passe si non fourni) */
+    // Met à jour un utilisateur
     public function updateUser(int $id, array $data): void
     {
         $fields = [
@@ -186,7 +186,7 @@ class UserModel
         $stmt->execute($params);
     }
 
-    /** Supprime un utilisateur */
+    // Supprime un utilisateur
     public function deleteUser(int $id): void
     {
         $sql = "DELETE FROM users WHERE id_user = :id";
@@ -194,28 +194,33 @@ class UserModel
         $stmt->execute(['id' => $id]);
     }
 
-    /** Stocke un token de reset de mot de passe */
-    public function storeResetToken(int $userId, string $token): void
+    // Stocke un token de reset
+    public function storeResetToken(int $userId, string $token, int $ttlSeconds = 3600): void
     {
-        $sql = "INSERT INTO password_resets (user_id, token, created_at) VALUES (:user_id, :token, NOW())";
+        // calcule la date d'expiration
+        $expiresAt = date('Y-m-d H:i:s', time() + $ttlSeconds);
+
+        $sql = "INSERT INTO password_resets (user_id, token, created_at, expires_at) VALUES (:user_id, :token, NOW(), :expires_at)";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([
             'user_id' => $userId,
-            'token' => $token
+            'token' => $token,
+            'expires_at' => $expiresAt
         ]);
     }
 
-    /** Récupère l'user_id associé à un token de reset */
+    // Récupère l'user_id associé à un token de reset
     public function findUserIdByResetToken(string $token): ?int
     {
-        $sql = "SELECT user_id FROM password_resets WHERE token = :token LIMIT 1";
+        // retourne le token seulement s'il n'est pas expiré
+        $sql = "SELECT user_id FROM password_resets WHERE token = :token AND (expires_at IS NULL OR expires_at > NOW()) LIMIT 1";
         $stmt = $this->db->prepare($sql);
         $stmt->execute(['token' => $token]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         return $row ? (int)$row['user_id'] : null;
     }
 
-    /** Supprime le token de reset pour un utilisateur */
+    // Supprime le token de reset
     public function deleteResetToken(int $userId): void
     {
         $sql = "DELETE FROM password_resets WHERE user_id = :id";
@@ -223,7 +228,7 @@ class UserModel
         $stmt->execute(['id' => $userId]);
     }
 
-    /** Met à jour le mot de passe d'un utilisateur (password déjà hashé) */
+    // Met à jour le mot de passe (hashé)
     public function updatePassword(int $userId, string $passwordHashed): void
     {
         $sql = "UPDATE users SET password = :password WHERE id_user = :id";
@@ -231,7 +236,7 @@ class UserModel
         $stmt->execute(['password' => $passwordHashed, 'id' => $userId]);
     }
 
-    /** Compte le nombre d'utilisateurs ayant le rôle donné */
+    // Compte les utilisateurs par rôle
     public function countByRole(int $roleId): int
     {
         $sql = "SELECT COUNT(*) as c FROM users WHERE role_id = :role";

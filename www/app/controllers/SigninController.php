@@ -12,12 +12,12 @@ class SigninController extends BaseController
     {
         $errors = [];
 
-        // Si le formulaire n'est pas soumis on affiche la vue
+        // affichage du formulaire si GET
         if ($_SERVER["REQUEST_METHOD"] !== "POST") {
             return $this->render('signin');
         }
 
-        // Vérifications MACRO comme vu en cours
+        // champs requis
         $required = ["firstname", "lastname", "email", "pwd", "pwdConfirm"];
         foreach ($required as $field) {
             if (!isset($_POST[$field]) || empty($_POST[$field])) {
@@ -29,14 +29,14 @@ class SigninController extends BaseController
             return $this->render('signin', ["errors" => $errors]);
         }
 
-        // Nettoyage des données comme vu en cours
+        // nettoyage
         $firstname = ucwords(strtolower(trim($_POST["firstname"])));
         $lastname  = strtoupper(trim($_POST["lastname"]));
         $email     = strtolower(trim($_POST["email"]));
         $pwd       = $_POST["pwd"];
         $pwdConfirm = $_POST["pwdConfirm"];
 
-        // Vérifications MICRO comme vu en cours
+        // validations
         if (strlen($firstname) < 2) {
             $errors[] = "Votre prénom doit faire au moins 2 caractères";
         }
@@ -49,13 +49,13 @@ class SigninController extends BaseController
             $errors[] = "Votre email est incorrect";
         }
 
-        // Vérification de l'unicité du mail via UserModel
+        // unicité email
         $userModel = new UserModel();
         if ($userModel->emailExists($email)) {
             $errors[] = "Cet email existe déjà";
         }
 
-        // Vérification mot de passe comme vu en cours
+        // vérification mot de passe
         if (
             strlen($pwd) < 8 ||
             !preg_match("#[a-z]#", $pwd) ||
@@ -70,15 +70,13 @@ class SigninController extends BaseController
             $errors[] = "La confirmation du mot de passe ne correspond pas";
         }
 
-        // Si erreurs on affiche la vue
         if (!empty($errors)) {
             return $this->render('signin', ["errors" => $errors]);
         }
 
-        // Hash du mot de passe comme vu en cours
+        // hash et création
         $passwordHashed = password_hash($pwd, PASSWORD_DEFAULT);
 
-        // Création de l'utilisateur
         $userId = $userModel->createUser([
             "firstname" => $firstname,
             "lastname"  => $lastname,
@@ -87,7 +85,7 @@ class SigninController extends BaseController
             "role_id"   => 3
         ]);
 
-        // Génération du token d’activation
+        // token activation
         $token = bin2hex(random_bytes(32));
         $userModel->storeActivationToken($userId, $token);
 

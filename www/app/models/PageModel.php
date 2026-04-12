@@ -14,9 +14,9 @@ class PageModel
         $this->db = Database::getInstance()->getConnection();
     }
 
+    // Récupère toutes les pages (avec auteur)
     public function getAll()
     {
-        // jointure pour récupérer le nom de l'auteur de chaque page pour que je puisse afficher le Prénom et Nom des auteurs des pages dans le tableau au lieu de l'ID qui nest pas très parlant
         $sql = "SELECT p.*, u.firstname, u.lastname
         FROM pages p
         JOIN users u ON u.id_user = p.author_id
@@ -42,7 +42,7 @@ class PageModel
         ]);
     }
 
-    /** Récupère une page par son slug (avec infos auteur) */
+    // Récupère une page par slug
     public function findBySlug(string $slug): ?array
     {
         $sql = "SELECT p.*, u.firstname, u.lastname
@@ -58,7 +58,7 @@ class PageModel
         return $result ?: null;
     }
 
-    /** Récupère une page par son id */
+    // Récupère une page par id
     public function findById(int $id): ?array
     {
         $sql = "SELECT p.*, u.firstname, u.lastname
@@ -74,7 +74,7 @@ class PageModel
         return $result ?: null;
     }
 
-    /** Met à jour une page */
+    // Met à jour une page
     public function update(int $id, array $data): void
     {
         $sql = "UPDATE pages SET title = :title, content = :content, slug = :slug, status = :status, updated_at = NOW() WHERE id_page = :id";
@@ -88,7 +88,7 @@ class PageModel
         ]);
     }
 
-    /** Supprime une page */
+    // Supprime une page
     public function delete(int $id): void
     {
         $sql = "DELETE FROM pages WHERE id_page = :id";
@@ -96,7 +96,7 @@ class PageModel
         $stmt->execute(["id" => $id]);
     }
 
-    /** Définit le statut d'une page */
+    // Modifie le statut
     public function setStatus(int $id, string $status): void
     {
         $sql = "UPDATE pages SET status = :status, updated_at = NOW() WHERE id_page = :id";
@@ -107,7 +107,7 @@ class PageModel
         ]);
     }
 
-    /** Bascule le statut entre 'published' et 'draft' */
+    // Bascule published <-> draft
     public function toggleStatus(int $id): void
     {
         $stmt = $this->db->prepare("SELECT status FROM pages WHERE id_page = :id");
@@ -121,7 +121,7 @@ class PageModel
         $this->setStatus($id, $new);
     }
 
-    /** Récupère les pages publiées pour le front */
+    // Pages publiées pour le front
     public function getPublished()
     {
         $sql = "SELECT p.*, u.firstname, u.lastname
@@ -130,6 +130,32 @@ class PageModel
                 WHERE p.status = 'published'
                 ORDER BY p.created_at DESC";
         $stmt = $this->db->query($sql);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    // Nombre total de pages
+    public function countAll(): int
+    {
+        $sql = "SELECT COUNT(*) as cnt FROM pages";
+        $stmt = $this->db->query($sql);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return (int)($row['cnt'] ?? 0);
+    }
+
+    // Pages pour pagination
+    public function getPaginated(int $limit, int $offset): array
+    {
+        $sql = "SELECT p.*, u.firstname, u.lastname
+                FROM pages p
+                JOIN users u ON u.id_user = p.author_id
+                ORDER BY p.created_at DESC
+                LIMIT :limit OFFSET :offset";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+        $stmt->execute();
+
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 

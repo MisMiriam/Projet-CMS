@@ -9,7 +9,7 @@ class Mailer
 {
     private function getBaseUrl(): string
     {
-        // Priorité à l'env APP_URL si défini, sinon tenter de construire depuis la requête HTTP, sinon fallback
+        // utiliser APP_URL si défini, sinon construire depuis la requête
         $env = getenv('APP_URL');
         if ($env && is_string($env) && trim($env) !== '') {
             return rtrim($env, '/');
@@ -28,7 +28,7 @@ class Mailer
         $mail = new PHPMailer(true);
 
         try {
-            // Config SMTP (exemple Gmail)
+            // SMTP
             $mail->isSMTP();
             $mail->Host = 'smtp.gmail.com';
             $mail->SMTPAuth = true;
@@ -37,13 +37,9 @@ class Mailer
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
             $mail->Port = 587;
 
-            // Expéditeur
             $mail->setFrom('pauline.entesok@gmail.com', 'CMS');
-
-            // Destinataire
             $mail->addAddress($to);
 
-            // Contenu
             $mail->isHTML(true);
             $mail->Subject = 'Activation de votre compte';
 
@@ -57,7 +53,6 @@ class Mailer
                 <p><a href=\"{$activationLink}\">{$activationLink}</a></p>
             ";
 
-            // Texte alternatif
             $mail->AltBody = "Bienvenue !\n\nMerci pour votre inscription.\n\nCopiez/collez ce lien dans votre navigateur pour activer votre compte : {$activationLink}";
 
             return $mail->send();
@@ -71,7 +66,7 @@ class Mailer
         $mail = new PHPMailer(true);
 
         try {
-            // Config SMTP (utiliser la même configuration)
+            // SMTP
             $mail->isSMTP();
             $mail->Host = 'smtp.gmail.com';
             $mail->SMTPAuth = true;

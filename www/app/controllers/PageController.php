@@ -24,14 +24,13 @@ class PageController extends BaseController
             return;
         }
 
-        // Vérification du statut
+        // interdit si non publié
         if (($page['status'] ?? '') !== 'published') {
             http_response_code(403);
-            // Afficher la vue forbidden si la page n'est pas publiée
             return $this->render('forbidden');
         }
 
-        // Rendu de la vue 'page' en passant la page
+        // afficher la page
         return $this->render('page', ['page' => $page]);
     }
 }

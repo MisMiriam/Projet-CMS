@@ -1,0 +1,13 @@
+// main.scss - entry point
+// Import settings, mixins, base, layout, components, themes
+@import 'settings';
+@import 'mixins';
+@import 'base/_reset';
+@import 'base';
+@import 'layout/_container';
+@import 'components/_btn';
+@import 'components/_form';
+@import 'components/_header';
+@import 'components/_footer';
+@import 'themes/_light';
+@import 'themes/_dark';

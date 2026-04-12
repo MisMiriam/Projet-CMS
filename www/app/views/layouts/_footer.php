@@ -1,11 +1,29 @@
 </main>
-<footer class="d-flex flex-wrap justify-content-center align-items-center gap-2 py-3 mt-4 border-top bg-primary text-white">
-    <!-- <a class="link-light" href="#">Accueil</a> -->
-    <p class="mb-0">Copyright 2026</p>
-    <a class=" link-light" href="https://github.com/MisMiriam/Projet-CMS"><i class="bi bi-github"></i> Projet</a>
+<footer class="site-footer">
+    <div class="site-footer__inner container">
+        <p class="site-footer__copy">Copyright 2026</p>
+        <a class="site-footer__link" href="https://github.com/MisMiriam/Projet-CMS">Projet</a>
+    </div>
 </footer>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
-<script src="src/js/index.js"></script>
+
+<!-- modal réutilisable (caché par défaut) -->
+<div id="app-modal" class="modal" aria-hidden="true" role="dialog" aria-modal="true" style="display:none">
+    <div class="modal__overlay" data-modal-close></div>
+    <div class="modal__dialog" role="document" aria-labelledby="modal-title">
+        <header class="modal__header">
+            <h2 id="modal-title" class="modal__title">Confirmer</h2>
+        </header>
+        <div id="modal-content" class="modal__content">Êtes-vous sûr ?</div>
+        <footer class="modal__footer">
+            <button class="btn btn--ghost" data-modal-cancel>Annuler</button>
+            <button class="btn btn--danger" data-modal-confirm>Confirmer</button>
+        </footer>
+    </div>
+</div>
+
+<script src="/src/js/index.js"></script>
+<script src="/src/js/theme-toggle.js"></script>
+<script src="/src/js/modal.js"></script>
 </body>
 
 </html>

@@ -93,8 +93,17 @@ class AdminRolesController extends BaseController
     {
         requireRole(1);
 
+        $id = (int)$id;
+
+        // Protection: ne pas permettre la suppression du rôle admin (id_role = 1)
+        if ($id === 1) {
+            // option : rediriger avec message d'erreur
+            header('Location: /admin/roles?error=protected');
+            exit;
+        }
+
         $userModel = new UserModel();
-        $count = $userModel->countByRole((int)$id);
+        $count = $userModel->countByRole($id);
         if ($count > 0) {
             // Retourner message d'erreur simple
             http_response_code(400);
@@ -103,7 +112,7 @@ class AdminRolesController extends BaseController
         }
 
         $model = new RoleModel();
-        $model->delete((int)$id);
+        $model->delete($id);
 
         header('Location: /admin/roles');
         exit;

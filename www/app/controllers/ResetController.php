@@ -11,7 +11,7 @@ class ResetController extends BaseController
     {
         $token = $_GET['token'] ?? null;
 
-        // GET : afficher le formulaire si token
+        // GET : afficher le formulaire
         if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             return $this->render('reset-password', ['token' => $token]);
         }

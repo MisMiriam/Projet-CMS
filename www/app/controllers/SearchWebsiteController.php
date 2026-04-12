@@ -7,7 +7,7 @@ class SearchWebsiteController extends BaseController
 {
     public function index()
     {
-        requireRole(2); // Les visiteurs n'ont pas accès
+        requireRole(2); // accès éditeur/admin
         $this->render('search-website');
     }
 }

@@ -12,10 +12,24 @@ class AdminPagesController extends BaseController
         requireRole(2); // les admin ET les éditeurs ont accès à cette page
 
         $model = new PageModel();
-        $pages = $model->getAll();
+
+        // pagination
+        $perPage = 10;
+        $page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
+        $total = $model->countAll();
+        $totalPages = (int)ceil($total / $perPage);
+        $offset = ($page - 1) * $perPage;
+
+        $pages = $model->getPaginated($perPage, $offset);
 
         return $this->render('admin/pages/index', [
-            "pages" => $pages
+            "pages" => $pages,
+            "pagination" => [
+                'current' => $page,
+                'perPage' => $perPage,
+                'total' => $total,
+                'totalPages' => $totalPages,
+            ]
         ]);
     }
 

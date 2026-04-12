@@ -11,50 +11,48 @@ $roleId = $_SESSION['role_id'] ?? null;
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
-    <!-- Fonts: Nunito -->
+    <!-- CSS du projet -->
+    <link rel="stylesheet" href="/css/styles.css">
+
+    <!-- Police : Nunito -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet">
+
     <title>Projet CMS</title>
 </head>
 
-<body class="position-relative d-flex flex-column">
-    <header>
-        <nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
-            <div class="container-fluid">
-                <a href="/" class="navbar-brand">Projet CMS</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="#navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse d-lg-flex justify-content-lg-between" id="navbarNav">
-                    <div class="navbar-nav">
-                        <a class="nav-link" href="/">Accueil</a>
+<body>
+    <header class="site-header">
+        <div class="site-header__inner container">
+            <a href="/" class="site-header__brand">Projet CMS</a>
 
-                        <?php if ($loggedIn && $roleId == 2): ?>
-                            <!-- Éditeur : accès gestion des pages -->
-                            <a class="nav-link" href="/admin/pages">Gérer les pages</a>
-                        <?php endif; ?>
+            <button class="site-header__toggle" aria-expanded="false" aria-label="Ouvrir le menu">☰</button>
 
-                        <?php if ($loggedIn && $roleId == 1): ?>
-                            <!-- Admin : Dashboard -->
-                            <a class="nav-link" href="/admin/dashboard">Tableau de bord</a>
-                        <?php endif; ?>
+            <nav class="site-nav" aria-label="Navigation principale">
+                <ul class="site-nav__list">
+                    <li class="site-nav__item"><a class="site-nav__link" href="/">Accueil</a></li>
 
-                    </div>
+                    <?php if ($loggedIn && $roleId == 2): ?>
+                        <li class="site-nav__item"><a class="site-nav__link" href="/admin/pages">Gérer les pages</a></li>
+                    <?php endif; ?>
 
-                    <div class="navbar-nav">
-                        <?php if (!$loggedIn): ?>
-                            <a class="nav-link" href="/login">Se connecter</a>
-                            <a class="nav-link" href="/signin">S'inscrire</a>
-                        <?php else: ?>
-                            <span class="navbar-text text-white me-2">Bonjour, <?= htmlspecialchars($_SESSION['firstname'] ?? '') ?></span>
-                            <a class="nav-link" href="/logout">Se déconnecter</a>
-                        <?php endif; ?>
-                    </div>
-                </div>
+                    <?php if ($loggedIn && $roleId == 1): ?>
+                        <li class="site-nav__item"><a class="site-nav__link" href="/admin/dashboard">Tableau de bord</a></li>
+                    <?php endif; ?>
+                </ul>
+            </nav>
+
+            <div class="site-header__actions">
+                <?php if (!$loggedIn): ?>
+                    <a class="site-header__link" href="/login">Se connecter</a>
+                    <a class="site-header__link" href="/signin">S'inscrire</a>
+                <?php else: ?>
+                    <span class="site-header__user">Bonjour, <?= htmlspecialchars($_SESSION['firstname'] ?? '') ?></span>
+                    <a class="site-header__link" href="/logout">Se déconnecter</a>
+                <?php endif; ?>
             </div>
-        </nav>
+        </div>
     </header>
+
     <main class="container my-4">

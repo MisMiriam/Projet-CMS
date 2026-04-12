@@ -2,10 +2,10 @@
 
 <h1>Gestion des utilisateurs</h1>
 
-<a href="/admin/users/create" class="btn btn-primary mb-3">Créer un utilisateur</a>
+<a href="/admin/users/create" class="btn btn--primary mb-3">Créer un utilisateur</a>
 
 <?php if (!empty($users)): ?>
-    <table class="table table-striped">
+    <table class="table">
         <thead>
             <tr>
                 <th>ID</th>
@@ -27,8 +27,8 @@
                     <td><?= htmlspecialchars($user['role_name'] ?? $user['role_id']) ?></td>
                     <td><?= $user['is_active'] ? 'Oui' : 'Non' ?></td>
                     <td>
-                        <a href="/admin/users/edit/<?= $user['id_user'] ?>" class="btn btn-sm btn-secondary">Modifier</a>
-                        <a href="/admin/users/delete/<?= $user['id_user'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Supprimer cet utilisateur ?')">Supprimer</a>
+                        <a href="/admin/users/edit/<?= $user['id_user'] ?>" class="btn btn--small btn--secondary">Modifier</a>
+                        <a href="/admin/users/delete/<?= $user['id_user'] ?>" class="btn btn--small btn--danger" data-confirm="Supprimer cet utilisateur ?">Supprimer</a>
                     </td>
                 </tr>
             <?php endforeach; ?>

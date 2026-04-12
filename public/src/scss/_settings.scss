@@ -1,0 +1,55 @@
+// _settings.scss
+// Variables et tokens (colors / spacing / typography) — placeholder
+// Palette confirmée: rose pastel (light) / violet (dark)
+
+// Example variables will be added here when implementing styles.
+
+// Variables et tokens (typography) - Nunito
+
+$font-sans: 'Nunito', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+$font-heading: $font-sans;
+
+$base-font-size: 16px;
+$line-height-base: 1.5;
+$space-1: 0.5rem;
+$space-2: 1rem;
+$space-3: 1.5rem;
+
+// Export as CSS custom properties for theme overrides
+:root {
+  --font-sans: #{$font-sans};
+  --font-heading: #{$font-heading};
+  --fs-base: #{$base-font-size};
+  --lh-base: #{$line-height-base};
+}
+
+// Light theme (rose pastel)
+:root {
+  --color-bg: #FFF8FB; /* very light pink */
+  --color-surface: #FFF1F6;
+  --color-primary: #F7C7D9; /* pastel rose */
+  --color-primary-600: #FF9EC2;
+  --color-accent: #FFDDE6;
+  --color-text: #262626;
+
+  --color-success: #DFF5E1;
+  --color-warning: #FFF3CD;
+  --color-danger: #FFE5E8;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+}
+
+// Dark theme variables (applied via .theme--dark)
+.theme--dark {
+  --color-bg: #120A1A;
+  --color-surface: #20132B;
+  --color-primary: #6B4B9B;
+  --color-primary-600: #9A7BD6;
+  --color-accent: #9A7BD6;
+  --color-text: #EDE8F8;
+
+  --color-success: #18391f;
+  --color-warning: #4b3514;
+  --color-danger: #3a121a;
+}

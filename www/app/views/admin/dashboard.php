@@ -1,3 +1,5 @@
+<?php require_once 'layouts/_header.php' ?>
+
 <h1>Dashboard</h1>
 
 <p>Bienvenue dans le backoffice.</p>
@@ -7,3 +9,5 @@
     <li><a href="/admin/users/index">Gérer les utilisateurs</a></li>
     <li><a href="/admin/roles/index">Gérer les rôles</a></li>
 </ul>
+
+<?php require_once 'layouts/_footer.php' ?>
