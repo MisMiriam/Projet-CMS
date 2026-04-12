@@ -23,21 +23,62 @@ class Mailer
         return 'http://localhost';
     }
 
+    // Récupère la config SMTP depuis les variables d'environnement
+    private function getSmtpConfig(): array
+    {
+        $host = getenv('SMTP_HOST') ?: 'smtp.gmail.com';
+        $username = getenv('SMTP_USERNAME') ?: '';
+        $password = getenv('SMTP_PASSWORD') ?: '';
+        $port = (int)(getenv('SMTP_PORT') ?: 587);
+        $secure = getenv('SMTP_SECURE') ?: 'tls'; // 'ssl' or 'tls'
+        $fromEmail = getenv('MAIL_FROM') ?: ($username ?: 'no-reply@example.com');
+        $fromName = getenv('MAIL_FROM_NAME') ?: 'CMS';
+
+        return [
+            'host' => $host,
+            'username' => $username,
+            'password' => $password,
+            'port' => $port,
+            'secure' => $secure,
+            'from_email' => $fromEmail,
+            'from_name' => $fromName,
+        ];
+    }
+
+    private function applySmtpConfig(PHPMailer $mail, array $cfg): void
+    {
+        $mail->isSMTP();
+        $mail->Host = $cfg['host'];
+
+        // activer l'authentification seulement si credentials fournis
+        if (!empty($cfg['username'])) {
+            $mail->SMTPAuth = true;
+            $mail->Username = $cfg['username'];
+            $mail->Password = $cfg['password'];
+        } else {
+            $mail->SMTPAuth = false;
+        }
+
+        // choisir le chiffrement
+        $secure = strtolower($cfg['secure']);
+        if ($secure === 'ssl' || $secure === 'smtps') {
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+        } else {
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        }
+
+        $mail->Port = $cfg['port'];
+        $mail->setFrom($cfg['from_email'], $cfg['from_name']);
+    }
+
     public function sendActivationEmail(string $to, string $token): bool
     {
         $mail = new PHPMailer(true);
 
         try {
-            // SMTP
-            $mail->isSMTP();
-            $mail->Host = 'smtp.gmail.com';
-            $mail->SMTPAuth = true;
-            $mail->Username = 'pauline.entesok@gmail.com';
-            $mail->Password = 'rnvzvawjkizrbquz';
-            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-            $mail->Port = 587;
+            $cfg = $this->getSmtpConfig();
+            $this->applySmtpConfig($mail, $cfg);
 
-            $mail->setFrom('pauline.entesok@gmail.com', 'CMS');
             $mail->addAddress($to);
 
             $mail->isHTML(true);
@@ -66,16 +107,9 @@ class Mailer
         $mail = new PHPMailer(true);
 
         try {
-            // SMTP
-            $mail->isSMTP();
-            $mail->Host = 'smtp.gmail.com';
-            $mail->SMTPAuth = true;
-            $mail->Username = 'pauline.entesok@gmail.com';
-            $mail->Password = 'rnvzvawjkizrbquz';
-            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-            $mail->Port = 587;
+            $cfg = $this->getSmtpConfig();
+            $this->applySmtpConfig($mail, $cfg);
 
-            $mail->setFrom('pauline.entesok@gmail.com', 'CMS');
             $mail->addAddress($to);
 
             $mail->isHTML(true);

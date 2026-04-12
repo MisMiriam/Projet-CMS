@@ -27,8 +27,6 @@ $roleId = $_SESSION['role_id'] ?? null;
         <div class="site-header__inner container">
             <a href="/" class="site-header__brand">Projet CMS</a>
 
-            <button class="site-header__toggle" aria-expanded="false" aria-label="Ouvrir le menu">☰</button>
-
             <nav class="site-nav" aria-label="Navigation principale">
                 <ul class="site-nav__list">
                     <li class="site-nav__item"><a class="site-nav__link" href="/">Accueil</a></li>
