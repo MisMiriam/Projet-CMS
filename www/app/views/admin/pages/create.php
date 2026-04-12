@@ -1,6 +1,6 @@
 <h1>Créer une page</h1>
 
-<form action="/adminpages/store" method="post">
+<form action="/admin/pages/store" method="post">
     <label>Titre</label>
     <input type="text" name="title" required>
 

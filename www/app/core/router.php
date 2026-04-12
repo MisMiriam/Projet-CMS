@@ -2,25 +2,57 @@
 
 class Router
 {
-
     public function run()
     {
-
         $url = $_GET['url'] ?? '';
 
-        // Si aucune URL alors redirection vers la page d'accueil
+        // Page d'accueil
         if ($url === '') {
-            $this->callController('Home', 'index');
-            return;
+            return $this->callController('Home', 'index');
         }
 
-        // Découpe l’URL : /controller/method/param1/param2
-        $parts = explode('/', $url);
+        $parts = explode('/', trim($url, '/'));
 
+        /**
+         * ROUTES ADMIN : /admin/xxx
+         */
+        if ($parts[0] === 'admin') {
+
+            // Exemple : /admin/pages/edit/12
+            // $parts = ['admin', 'pages', 'edit', '12']
+
+            $controllerName = 'Admin' . ucfirst($parts[1]) . 'Controller';
+            $method = $parts[2] ?? 'index';
+            $params = array_slice($parts, 3);
+
+            return $this->dispatch($controllerName, $method, $params);
+        }
+
+        /**
+         * ROUTES PAGES PUBLIQUES : /page/slug
+         */
+        if ($parts[0] === 'page') {
+
+            // Exemple : /page/mon-slug
+            $controllerName = 'PageController';
+            $method = 'show';
+            $params = [$parts[1] ?? null];
+
+            return $this->dispatch($controllerName, $method, $params);
+        }
+
+        /**
+         * ROUTES MVC CLASSIQUES : /controller/method/param
+         */
         $controllerName = ucfirst($parts[0]) . 'Controller';
         $method = $parts[1] ?? 'index';
         $params = array_slice($parts, 2);
 
+        return $this->dispatch($controllerName, $method, $params);
+    }
+
+    private function dispatch($controllerName, $method, $params)
+    {
         $controllerFile = "../app/controllers/$controllerName.php";
 
         if (file_exists($controllerFile)) {
@@ -30,13 +62,11 @@ class Router
                 $controller = new $controllerName();
 
                 if (method_exists($controller, $method)) {
-                    call_user_func_array([$controller, $method], $params);
-                    return;
+                    return call_user_func_array([$controller, $method], $params);
                 }
             }
         }
 
-        // Si aucune correspondance trouvée alors on lance une erreur 404
         http_response_code(404);
         echo "404 - Page non trouvée";
     }

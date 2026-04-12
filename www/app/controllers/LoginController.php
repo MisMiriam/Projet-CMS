@@ -37,21 +37,20 @@ class LoginController extends BaseController
             return $this->render('login', compact('error'));
         }
 
+        // Stocker les infos essentielles en session
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        // Régénérer l'ID de session après authentification (prévenir session fixation)
+        session_regenerate_id(true);
+
         $_SESSION['user_id'] = $user['id_user'];
         $_SESSION['role_id'] = $user['role_id'];
         $_SESSION['firstname'] = $user['firstname'];
 
-        // Redirection selon le rôle
-        switch ($user['role_id']) {
-            case 1:
-                header('Location: /adminDashboard');
-                break;
-            case 2:
-                header('Location: /admin/pages');
-                break;
-            default:
-                header('Location: /');
-        }
+        // Redirection vers la page d'accueil pour tous
+        header('Location: /');
         exit;
     }
 }

@@ -1,6 +1,6 @@
 <h1>Gestion des pages</h1>
 
-<a href="/adminpages/create">Créer une nouvelle page</a>
+<a href="/admin/pages/create">Créer une nouvelle page</a>
 
 <table>
     <tr>
@@ -20,8 +20,8 @@
             <td><?= $page['status'] ?></td>
             <td><?= $page['firstname'] . ' ' . $page['lastname'] ?></td>
             <td>
-                <a href="/adminpages/edit/<?= $page['id_page'] ?>">Modifier</a>
-                <a href="/adminpages/delete/<?= $page['id_page'] ?>">Supprimer</a>
+                <a href="/admin/pages/edit/<?= $page['id_page'] ?>">Modifier</a>
+                <a href="/admin/pages/delete/<?= $page['id_page'] ?>">Supprimer</a>
             </td>
         </tr>
     <?php endforeach; ?>
