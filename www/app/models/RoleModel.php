@@ -17,72 +17,11 @@ class RoleModel
     {
         $this->db = Database::getInstance()->getConnection();
 
-        // Déterminer le nom de la table (supporte 'roles' ou 'role')
-        $table = null;
-        $stmt = $this->db->query("SHOW TABLES LIKE 'roles'");
-        if ($stmt && $stmt->fetch()) {
-            $table = 'roles';
-        } else {
-            $stmt = $this->db->query("SHOW TABLES LIKE 'role'");
-            if ($stmt && $stmt->fetch()) {
-                $table = 'role';
-            }
-        }
-
-        if (!$table) {
-            // garder 'roles' par défaut : les méthodes feront échouer proprement si table absente
-            $table = 'roles';
-        }
-
-        $this->table = $table;
-
-        // Tenter de détecter les colonnes id/name/description
-        try {
-            $colsStmt = $this->db->query("SHOW COLUMNS FROM `{$this->table}`");
-            $cols = $colsStmt ? $colsStmt->fetchAll(PDO::FETCH_ASSOC) : [];
-
-            // Par défaut
-            $this->idCol = 'id_role';
-            $this->nameCol = 'name';
-            $this->descCol = 'description';
-
-            // Best-effort mapping selon les colonnes réelles
-            $colNames = array_column($cols, 'Field');
-
-            // id candidate: look for 'id_role', 'id', or ending with '_id'
-            foreach ($colNames as $c) {
-                if ($c === 'id_role' || $c === 'id') { $this->idCol = $c; break; }
-            }
-            if ($this->idCol === 'id_role') {
-                foreach ($colNames as $c) {
-                    if (preg_match('/_id$/', $c) && $c !== 'role_id') { $this->idCol = $c; break; }
-                }
-            }
-
-            // name candidate: prefer 'name', then 'role', then 'label'
-            if (in_array('name', $colNames)) {
-                $this->nameCol = 'name';
-            } else if (in_array('role', $colNames)) {
-                $this->nameCol = 'role';
-            } else if (in_array('label', $colNames)) {
-                $this->nameCol = 'label';
-            } else if (!empty($colNames[1])) {
-                // fallback to second column if available
-                $this->nameCol = $colNames[1];
-            }
-
-            // description candidate
-            if (in_array('description', $colNames)) {
-                $this->descCol = 'description';
-            } else {
-                $this->descCol = null;
-            }
-        } catch (\Exception $e) {
-            // si SHOW COLUMNS échoue, garder les valeurs par défaut
-            $this->idCol = 'id_role';
-            $this->nameCol = 'name';
-            $this->descCol = 'description';
-        }
+        // Table et colonnes connues : utiliser la table 'role' fournie par l'utilisateur
+        $this->table = 'role';
+        $this->idCol = 'id_role';
+        $this->nameCol = 'name';
+        $this->descCol = null; // la table ne contient pas de colonne 'description' selon la DB fournie
     }
 
     public function getAll(): array
